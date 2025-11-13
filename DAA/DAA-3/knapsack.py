@@ -1,20 +1,39 @@
-def knapsack(values,weights,capacity):
-    dp = [[0 for i in range(capacity+1)] for j in range(len(values)+1)]
+class Item:
+    def __init__(self, value, weight):
+        self.value = value
+        self.weight = weight
+        self.ratio = value / weight  # Value-to-weight ratio
 
-    for item in range(1,len(values) + 1):
-        for weight in range(1,capacity + 1):
-            if weights[item - 1] <= weight:
-                dp[item][weight] = max(dp[item-1][weight-weights[item-1]]+values[item-1],dp[item-1][weight])
-            else:
-                dp[item][weight] = dp[item-1][weight]
-    return dp[-1][-1]
+def fractional_knapsack(capacity, items):
+    # Sort items by value-to-weight ratio in descending order
+    items.sort(key=lambda x: x.ratio, reverse=True)
 
+    total_value = 0.0
 
-while True:
-    print("Press Ctrl+C to terminate...")
-    n = int(input('Enter number of items: '))
-    values = [int(i) for i in input("Enter values of items:").split(" ")]
-    weights = [int(i) for i in input("Enter weights of items:").split(" ")]
-    capacity = int(input("Enter maximum weight: "))
-    maximum_value = knapsack(values,weights,capacity)
-    print('The maximum value of items that can be carried:', maximum_value)
+    for item in items:
+        if capacity == 0:
+            break
+        if item.weight <= capacity:
+            total_value += item.value
+            capacity -= item.weight
+        else:
+            # Take the fraction of the item that fits
+            fraction = capacity / item.weight
+            total_value += item.value * fraction
+            capacity = 0  # Knapsack is full
+
+    return total_value
+
+n = int(input("Enter number of items: "))
+items = []
+
+print("Enter value and weight of each item:")
+for _ in range(n):
+    value, weight = map(int, input().split())
+    items.append(Item(value, weight))
+
+capacity = int(input("Enter capacity of knapsack: "))
+
+max_value = fractional_knapsack(capacity, items)
+
+print(f"\nMaximum value in Knapsack = {max_value}")
