@@ -42,15 +42,22 @@ contract StudentRegister {
     function getTotalStudents() public view returns (uint) {
         return students.length;
     }
+
+    // Event to log ETH received
+    event EthReceived(address sender, uint amount);
+    event FallbackCalled(address sender, uint amount, bytes data);
+
     
     // 3. FALLBACK - called when function doesn't exist or with data
     fallback() external payable {
         // Fallback executed
+        emit FallbackCalled(msg.sender, msg.value, msg.data);
     }
     
     // RECEIVE - called when plain Ether sent
     receive() external payable {
         // Ether received
+        emit EthReceived(msg.sender, msg.value);
     }
     
     // Check contract balance
